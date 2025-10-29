@@ -1,12 +1,14 @@
 import { Router } from "express";
+import { getUserById, getAllUsers } from "../controllers/user.controller.js";
+import authorize from "../middlewares/auth.middleware.js";
 
 const userRouter = Router();
 
 // GET /users/:id -> Get user by id, it's a dynamic parameter
 
-userRouter.get("/", (req, res) => res.send({ title: "GET all Users " }));
+userRouter.get("/", getAllUsers);
 
-userRouter.get("/:id", (req, res) => res.send({ title: "GET user details " }));
+userRouter.get("/:id", authorize, getUserById);
 
 userRouter.post("/", (req, res) => res.send({ title: "CREATE a user " }));
 
