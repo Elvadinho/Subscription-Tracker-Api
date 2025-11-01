@@ -42,3 +42,28 @@ export const deleteSub = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getSubDetails = async (req, res, next) => {
+  try {
+    const subscription = await Subscription.findById(req.params.id);
+
+    if (!subscription) {
+      const error = new Error("Subscription not found");
+      error.status = 404;
+      throw error;
+    }
+
+    // A user can not see someone else subscription
+    if (subscription.user.toString() !== req.user._id.toString()) {
+      const error = new Error(
+        "You are not authorized to view this subscription"
+      );
+      error.status = 403;
+      throw error;
+    }
+
+    res.status(200).json({ success: true, data: subscription });
+  } catch (error) {
+    next(error);
+  }
+};
