@@ -1,6 +1,7 @@
 import { Router } from "express";
 import authorize from "../middlewares/auth.middleware.js";
 import {
+  cancelSub,
   createSubscription,
   deleteSub,
   getSubDetails,
@@ -25,9 +26,7 @@ subscriptionRouter.delete("/:id", authorize, deleteSub);
 
 subscriptionRouter.get("/user/:id", authorize, getUserSubscriptions);
 
-subscriptionRouter.put("/:id/cancel", (req, res) =>
-  res.send({ title: "Cancel Subscription " })
-);
+subscriptionRouter.put("/:id/cancel", authorize, cancelSub);
 
 // subscriptionRouter.put("/upcoming-renewals", (req, res) =>
 //   res.send({ title: "Get upcoming renewals " })

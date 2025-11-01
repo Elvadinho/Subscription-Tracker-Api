@@ -67,3 +67,26 @@ export const getSubDetails = async (req, res, next) => {
     next(error);
   }
 };
+
+export const cancelSub = async (req, res, next) => {
+  const updates = {
+    status: "cancelled",
+  };
+  try {
+    const subscription = await Subscription.findByIdAndUpdate(
+      req.params.id,
+      { $set: updates },
+      { new: true }
+    );
+
+    if (!subscription) {
+      const error = new Error("Subscription not found");
+      error.status = 404;
+      throw error;
+    }
+
+    res.status(200).json({ success: true, data: subscription });
+  } catch (error) {
+    next(error);
+  }
+};
