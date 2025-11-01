@@ -4,6 +4,7 @@ import {
   cancelSub,
   createSubscription,
   deleteSub,
+  getAllSub,
   getSubDetails,
   getUserSubscriptions,
   updateSub,
@@ -11,9 +12,7 @@ import {
 
 const subscriptionRouter = Router();
 
-subscriptionRouter.get("/", (req, res) =>
-  res.send({ title: "GET all Subscriptions " })
-);
+subscriptionRouter.get("/", getAllSub);
 
 subscriptionRouter.post("/", authorize, createSubscription);
 

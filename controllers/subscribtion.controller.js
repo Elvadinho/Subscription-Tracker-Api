@@ -110,3 +110,18 @@ export const updateSub = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getAllSub = async (req, res, next) => {
+  try {
+    const subscriptions = await Subscription.find({});
+
+    if (!subscriptions) {
+      const error = new Error("Subscription not found");
+      error.status = 404;
+      throw error;
+    }
+    res.status(200).json({ success: true, data: subscriptions });
+  } catch (error) {
+    next(error);
+  }
+};
