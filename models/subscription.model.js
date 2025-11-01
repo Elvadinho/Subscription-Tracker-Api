@@ -26,7 +26,7 @@ const subscriptionSchema = new mongoose.Schema(
     },
     category: {
       type: String,
-      enum: ["entertainment", "education", "productivity", "other", "sports"],
+      enum: ["entertainment", "education", "productivity", "other", "sport"],
     },
     paymentMethod: {
       type: String,
@@ -35,7 +35,7 @@ const subscriptionSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["active", "canceled", "paused"],
+      enum: ["active", "cancelled", "paused", "expired"],
       default: "active",
     },
     startDate: {
