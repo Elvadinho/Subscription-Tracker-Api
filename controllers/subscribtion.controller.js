@@ -26,3 +26,19 @@ export const getUserSubscriptions = async (req, res, next) => {
     next(error);
   }
 };
+
+export const deleteSub = async (req, res, next) => {
+  try {
+    const subscription = await Subscription.findByIdAndDelete(req.params.id);
+
+    if (!subscription) {
+      const error = new Error("Subscription not found");
+      error.status = 404;
+      throw error;
+    }
+
+    res.status(200).json({ success: true, data: {} });
+  } catch (error) {
+    next(error);
+  }
+};
