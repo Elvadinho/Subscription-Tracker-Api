@@ -49,7 +49,26 @@ const subscriptionSchema = new mongoose.Schema(
     renewalDate: {
       type: Date,
       validate: {
-        validator: (value) => value > this.startDate,
+        validator: function (value) {
+          if (!value) return true;
+
+          // Document validation (save): `this` is the document and startDate should be available
+          if (this && this.startDate) {
+            return new Date(value) > new Date(this.startDate);
+          }
+
+          // Query/update validation (when using runValidators: true with context: 'query')
+          // `this` may be the query object; attempt to read startDate from the update payload
+          if (this && typeof this.getUpdate === "function") {
+            const upd = this.getUpdate() || {};
+            const start = upd.startDate || (upd.$set && upd.$set.startDate);
+            if (!start) return true;
+            return new Date(value) > new Date(start);
+          }
+
+          // Fallback allow if we cannot determine startDate
+          return true;
+        },
         message: "Renewal date must be after start date",
       },
     },

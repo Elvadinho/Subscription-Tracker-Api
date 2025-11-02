@@ -14,9 +14,9 @@ export const createSubscription = async (req, res, next) => {
 
 export const getUserSubscriptions = async (req, res, next) => {
   try {
-    if (req.user.id !== req.params.id) {
+    if (req.user._id.toString() !== req.params.id) {
       const error = new Error("You are not the owner of this account");
-      error.status = 401;
+      error.status = 403;
       throw error;
     }
 
@@ -29,13 +29,23 @@ export const getUserSubscriptions = async (req, res, next) => {
 
 export const deleteSub = async (req, res, next) => {
   try {
-    const subscription = await Subscription.findByIdAndDelete(req.params.id);
+    const subscription = await Subscription.findById(req.params.id);
 
     if (!subscription) {
       const error = new Error("Subscription not found");
       error.status = 404;
       throw error;
     }
+
+    if (subscription.user.toString() !== req.user._id.toString()) {
+      const error = new Error(
+        "You are not authorized to delete this subscription"
+      );
+      error.status = 403;
+      throw error;
+    }
+
+    await subscription.deleteOne();
 
     res.status(200).json({ success: true, data: {} });
   } catch (error) {
@@ -69,21 +79,25 @@ export const getSubDetails = async (req, res, next) => {
 };
 
 export const cancelSub = async (req, res, next) => {
-  const updates = {
-    status: "cancelled",
-  };
   try {
-    const subscription = await Subscription.findByIdAndUpdate(
-      req.params.id,
-      { $set: updates },
-      { new: true }
-    );
+    const subscription = await Subscription.findById(req.params.id);
 
     if (!subscription) {
       const error = new Error("Subscription not found");
       error.status = 404;
       throw error;
     }
+
+    if (subscription.user.toString() !== req.user._id.toString()) {
+      const error = new Error(
+        "You are not authorized to cancel this subscription"
+      );
+      error.status = 403;
+      throw error;
+    }
+
+    subscription.status = "cancelled";
+    await subscription.save();
 
     res.status(200).json({ success: true, data: subscription });
   } catch (error) {
@@ -93,17 +107,28 @@ export const cancelSub = async (req, res, next) => {
 
 export const updateSub = async (req, res, next) => {
   try {
-    const subscription = await Subscription.findByIdAndUpdate(
-      req.params.id,
-      { $set: req.body },
-      { new: true }
-    );
+    const subscription = await Subscription.findById(req.params.id);
 
     if (!subscription) {
       const error = new Error("Subscription not found");
       error.status = 404;
       throw error;
     }
+
+    if (subscription.user.toString() !== req.user._id.toString()) {
+      const error = new Error(
+        "You are not authorized to update this subscription"
+      );
+      error.status = 403;
+      throw error;
+    }
+
+    const updates = { ...req.body };
+    // Prevent changing ownership via update
+    if (updates.user) delete updates.user;
+
+    Object.assign(subscription, updates);
+    await subscription.save();
 
     res.status(200).json({ success: true, data: subscription });
   } catch (error) {
