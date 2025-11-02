@@ -1,7 +1,6 @@
 import { Router } from "express";
 import authorize from "../middlewares/auth.middleware.js";
 import {
-  cancelSub,
   createSubscription,
   deleteSub,
   getAllSub,
@@ -23,7 +22,5 @@ subscriptionRouter.put("/:id", authorize, updateSub);
 subscriptionRouter.delete("/:id", authorize, deleteSub);
 
 subscriptionRouter.get("/user/:id", authorize, getUserSubscriptions);
-
-subscriptionRouter.put("/:id/cancel", authorize, cancelSub);
 
 export default subscriptionRouter;
