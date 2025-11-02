@@ -8,7 +8,7 @@ import {
   getSubDetails,
   getUserSubscriptions,
   updateSub,
-} from "../controllers/subscribtion.controller.js";
+} from "../controllers/subscription.controller.js";
 
 const subscriptionRouter = Router();
 
