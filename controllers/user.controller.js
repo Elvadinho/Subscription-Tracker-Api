@@ -39,3 +39,34 @@ export const getUserById = async (req, res, next) => {
     next(error);
   }
 };
+
+export const deleteUserById = async (req, res, next) => {
+  try {
+    // A user can only delete his own account, not someone else account
+    if (req.user._id.toString() !== req.params.id) {
+      const error = new Error(
+        "You are not authorized to delete another user account !!!"
+      );
+      error.statusCode = 403;
+      throw error;
+    }
+
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+      const error = new Error("User not found");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    await user.deleteOne();
+
+    res.status(200).json({
+      success: true,
+      message: "The user account was deleted successfully",
+      data: {},
+    });
+  } catch (error) {
+    next(error);
+  }
+};
