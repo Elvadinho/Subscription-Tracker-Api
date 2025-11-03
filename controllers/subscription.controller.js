@@ -14,8 +14,11 @@ export const createSubscription = async (req, res, next) => {
 
 export const getUserSubscriptions = async (req, res, next) => {
   try {
-    if (req.user._id.toString() !== req.params.id) {
-      const error = new Error("You are not the owner of this account");
+    // Allow owner or admin to view a user's subscriptions
+    if (req.user._id.toString() !== req.params.id && !req.user.isAdmin) {
+      const error = new Error(
+        "You are not authorized to view these subscriptions"
+      );
       error.status = 403;
       throw error;
     }
@@ -37,7 +40,11 @@ export const deleteSub = async (req, res, next) => {
       throw error;
     }
 
-    if (subscription.user.toString() !== req.user._id.toString()) {
+    // Allow owner or admin to delete a subscription
+    if (
+      subscription.user.toString() !== req.user._id.toString() &&
+      !req.user.isAdmin
+    ) {
       const error = new Error(
         "You are not authorized to delete this subscription"
       );
@@ -111,13 +118,16 @@ export const updateSub = async (req, res, next) => {
 
 export const getAllSub = async (req, res, next) => {
   try {
-    const subscriptions = await Subscription.find({});
-
-    if (!subscriptions) {
-      const error = new Error("Subscription not found");
-      error.status = 404;
+    // Only admins can list all subscriptions
+    if (!req.user || !req.user.isAdmin) {
+      const error = new Error(
+        "You are not authorized to view all subscriptions"
+      );
+      error.status = 403;
       throw error;
     }
+
+    const subscriptions = await Subscription.find({});
     res.status(200).json({ success: true, data: subscriptions });
   } catch (error) {
     next(error);

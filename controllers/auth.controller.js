@@ -92,5 +92,30 @@ export const signIn = async (req, res, next) => {
 
 export const signOut = async (req, res, next) => {
   // Logic for user sign-out
-  res.send("User signed out");
+
+  try {
+    // Since JWT is stateless, sign-out can be handled on the client side by deleting the token.
+    res.status(200).json({
+      success: true,
+      message: "User signed out successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
 };
+
+// Client-side example of how to use this endpoint
+// async function signOut() {
+//   try {
+//     const response = await fetch('/api/v1/auth/signout', {
+//       method: 'POST'
+//     });
+//     if (response.ok) {
+//       // Remove token from storage
+//       localStorage.removeItem('token');
+//       // Redirect or update UI state
+//     }
+//   } catch (error) {
+//     console.error('Sign out failed:', error);
+//   }
+// }
