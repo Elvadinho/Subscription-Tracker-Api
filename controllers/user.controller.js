@@ -14,6 +14,15 @@ export const getAllUsers = async (req, res, next) => {
 
 export const getUserById = async (req, res, next) => {
   try {
+    // Only allow user to get their own details
+    if (req.user._id.toString() !== req.params.id) {
+      const error = new Error(
+        "You are not authorized to view this user's details"
+      );
+      error.statusCode = 403;
+      throw error;
+    }
+
     const user = await User.findById(req.params.id).select("-password");
 
     if (!user) {
