@@ -11,7 +11,7 @@ import {
 
 const subscriptionRouter = Router();
 
-subscriptionRouter.get("/", getAllSub);
+subscriptionRouter.get("/", authorize, getAllSub);
 
 subscriptionRouter.post("/", authorize, createSubscription);
 

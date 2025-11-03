@@ -2,7 +2,14 @@ import User from "../models/user.model.js";
 
 export const getAllUsers = async (req, res, next) => {
   try {
-    const users = await User.find();
+    // Only admins can list all users
+    if (!req.user || !req.user.isAdmin) {
+      const error = new Error("You are not authorized to view all users");
+      error.statusCode = 403;
+      throw error;
+    }
+
+    const users = await User.find().select("-password");
     res.status(200).json({
       success: true,
       data: users,
@@ -14,8 +21,8 @@ export const getAllUsers = async (req, res, next) => {
 
 export const getUserById = async (req, res, next) => {
   try {
-    // Only allow user to get their own details
-    if (req.user._id.toString() !== req.params.id) {
+    // Allow if owner or admin
+    if (req.user._id.toString() !== req.params.id && !req.user.isAdmin) {
       const error = new Error(
         "You are not authorized to view this user's details"
       );
@@ -42,10 +49,10 @@ export const getUserById = async (req, res, next) => {
 
 export const deleteUserById = async (req, res, next) => {
   try {
-    // A user can only delete his own account, not someone else account
-    if (req.user._id.toString() !== req.params.id) {
+    // Allow deletion if owner or admin
+    if (req.user._id.toString() !== req.params.id && !req.user.isAdmin) {
       const error = new Error(
-        "You are not authorized to delete another user account !!!"
+        "You are not authorized to delete another user account"
       );
       error.statusCode = 403;
       throw error;
@@ -79,8 +86,8 @@ export const updateUser = async (req, res, next) => {
       throw error;
     }
 
-    // A user can only modify their own account info
-    if (req.user._id.toString() !== req.params.id) {
+    // Allow owner or admin to modify user info
+    if (req.user._id.toString() !== req.params.id && !req.user.isAdmin) {
       const error = new Error(
         "You are not authorized to update this user account"
       );
@@ -144,6 +151,16 @@ export const updateUser = async (req, res, next) => {
       updates.password = await bcrypt.hash(req.body.password, salt);
     }
 
+    // Allow admin to set isAdmin flag
+    if (req.body.isAdmin !== undefined) {
+      if (!req.user.isAdmin) {
+        const error = new Error("Only admins can change admin status");
+        error.statusCode = 403;
+        throw error;
+      }
+      updates.isAdmin = !!req.body.isAdmin;
+    }
+
     // Update the user with validated fields
     Object.assign(user, updates);
     await user.save();
@@ -157,6 +174,40 @@ export const updateUser = async (req, res, next) => {
       message: "User account updated successfully",
       data: userResponse,
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const promoteUser = async (req, res, next) => {
+  try {
+    // Only admins can promote users
+    if (!req.user || !req.user.isAdmin) {
+      const error = new Error("You are not authorized to promote users");
+      error.statusCode = 403;
+      throw error;
+    }
+
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      const error = new Error("User not found");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    user.isAdmin = true;
+    await user.save();
+
+    const userResponse = user.toObject();
+    delete userResponse.password;
+
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: "User promoted to admin",
+        data: userResponse,
+      });
   } catch (error) {
     next(error);
   }
