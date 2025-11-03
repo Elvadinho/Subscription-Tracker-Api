@@ -6,7 +6,7 @@ const userRouter = Router();
 
 // GET /users/:id -> Get user by id, it's a dynamic parameter
 
-userRouter.get("/", getAllUsers);
+userRouter.get("/", getAllUsers); // Admin
 
 userRouter.get("/:id", authorize, getUserById);
 
