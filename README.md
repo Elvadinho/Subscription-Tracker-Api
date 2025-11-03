@@ -3,7 +3,6 @@
 A simple and efficient **Subscription Tracker API** built to help users manage their subscriptions with ease.  
 Users can **create accounts**, **log in**, **add, update, or delete subscriptions**, and **track renewal dates** — all through secure API endpoints.
 
----
 
 ## 🚀 Features
 
@@ -18,8 +17,12 @@ Users can **create accounts**, **log in**, **add, update, or delete subscription
 
 - ⚙️ **Fully RESTful API**
   - Clean and consistent endpoints following REST principles
+ 
+- 🛡️ **Security**
+  - Token-based authentication with **JWT**
+  - Enhanced API security with **Arcjet**
+  - Safe environment variable management using **dotenv**
 
----
 
 ## 🧠 Tech Stack
 
@@ -30,7 +33,6 @@ Users can **create accounts**, **log in**, **add, update, or delete subscription
 - **Environment:** dotenv for configuration  
 - **Tools:** Postman / httpie for testing
 
----
 
 ## 🧩 API Endpoints Overview
 
@@ -44,11 +46,32 @@ Users can **create accounts**, **log in**, **add, update, or delete subscription
 | `PUT` | `/api/subscriptions/:id` | Update a subscription |
 | `DELETE` | `/api/subscriptions/:id` | Delete a subscription |
 
----
+All the endpoints are in the **documentation.md** file
+
 
 ## ⚡ Installation & Setup
+- Download and install **node js**
+- Use **postman** or **httpie** to test the endpoints
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/your-username/subscription-tracker-api.git
+   git clone https://github.com/Elvadinho/subscription-tracker-api.git
    cd subscription-tracker-api
+   ```
+   
+2. **Install the Dependencies**
+   ```bash
+   npm insatll
+   ```
+   This command will install all the packages and dependencies needed on your computer
+
+3. **Create all required accounts**
+   - MongoDB
+   - Arcjet
+   
+   Don't forget to store your API keys in the .env.*.local environment variables
+
+4. **Run the server**
+   ```bash
+   npm run dev
+   ```
