@@ -55,7 +55,7 @@ All the endpoints are in the **documentation.md** file
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/Elvadinho/subscription-tracker-api.git
+   git clone https://github.com/Elvadinho/Subscription-Tracker-Api.git
    cd subscription-tracker-api
    ```
    
