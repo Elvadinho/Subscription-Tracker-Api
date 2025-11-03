@@ -3,6 +3,7 @@ import {
   getUserById,
   getAllUsers,
   deleteUserById,
+  updateUser,
 } from "../controllers/user.controller.js";
 import authorize from "../middlewares/auth.middleware.js";
 
@@ -14,7 +15,7 @@ userRouter.get("/", getAllUsers); // Admin
 
 userRouter.get("/:id", authorize, getUserById);
 
-userRouter.put("/:id", (req, res) => res.send({ title: "Update a user " }));
+userRouter.put("/:id", authorize, updateUser);
 
 userRouter.delete("/:id", authorize, deleteUserById);
 
